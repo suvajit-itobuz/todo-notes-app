@@ -28,12 +28,12 @@ export const registerUser = async (req, res) => {
         message: "registered successfully",
       });
     } else {
-      console.log("registration failed");
+      throw new Error("registration failed ");
     }
   } catch (error) {
     res.json({
       status: 404,
-      message: ""+error,
+      message: "" + error,
     });
     console.log(error);
   }
