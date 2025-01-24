@@ -1,16 +1,18 @@
 import user from "../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-
-function generateAccessToken(userName) {
-  return jwt.sign(userName, process.env.TOKEN_SECRET);
-}
+import sendemail from "../emailVerify/verifyEmail.js";
 
 // register
 export const registerUser = async (req, res) => {
   try {
     const { userName, email, password } = req.body;
-    const generatedToken = generateAccessToken(userName);
+    console.log(userName);
+    const generatedToken = jwt.sign({userName}, process.env.TOKEN_SECRET, {
+      expiresIn: "10m",
+    });
+    console.log(generatedToken);
+
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -22,6 +24,7 @@ export const registerUser = async (req, res) => {
     });
 
     if (data) {
+      sendemail(email, generatedToken);
       res.json({
         status: 201,
         data: data,
@@ -38,3 +41,4 @@ export const registerUser = async (req, res) => {
     console.log(error);
   }
 };
+

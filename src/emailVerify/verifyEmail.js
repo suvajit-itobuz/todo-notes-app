@@ -1,25 +1,33 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv/config";
 
-const transporter = nodemailer.createTransport({
-    service:"Gmail",
+const sendemail = async (email,emailToken) => {
+  const transporter = nodemailer.createTransport({
+    service: "Gmail",
     auth: {
-        user: "suvajit@itobuz.com",
-        pass: "qwerty",
-      }
+      user: process.env.EMAIL_ID,
+      pass: process.env.pass,
+    },
+  });
+  // console.log(process.env.EMAIL_ID)
+  const mailData = {
+    from: process.env.EMAIL_ID,
+    // to: `${email}`,
+    to:"suvajit@itobuz.com",
+    subject: "Email Verification",
+    text: `Verify your email`,
+    html:`<p>Hello, verify your email address by clicking on this</p>
+    <br>
+    <a href="http://localhost:8000/verify/${emailToken}">Click here to verify</a>
+    `
+  };
 
-});
-
-const mailData = {
-    from : "suvajit@itobuz.com",
-    to : "suvanit@itobuz.com",
-    subject : "Verify Email",
-    text : `${url}`,
-
-}
-
-transporter.sendMail(mailData,(error,info)=>{
-    if(error){
-        return console.log(error)
+  transporter.sendMail(mailData, (error, info) => {
+    if (error) {
+      return console.log(error);
+    } else {
+      console.log("Email Sent succesfully");
     }
-    return info;
-})
+  });
+};
+export default sendemail;
