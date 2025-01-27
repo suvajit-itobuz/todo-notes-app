@@ -3,7 +3,6 @@ import dotenv from "dotenv/config";
 import route from "./src/routes/userRoutes.js";
 import dbconnect from "./src/config/dbConnection.js";
 
-
 const PORT = process.env.PORT;
 const app = express();
 
@@ -15,5 +14,3 @@ dbconnect();
 app.listen(PORT, () => {
   console.log(`server listening on port ${PORT}`);
 });
-
-

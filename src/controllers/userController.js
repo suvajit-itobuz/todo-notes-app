@@ -39,7 +39,7 @@ export const registerUser = async (req, res) => {
       sendemail(email, generatedToken);
       res.json({
         status: 201,
-        id:data._id,
+        id: data._id,
         message: "registered successfully",
       });
     } else {
@@ -71,7 +71,7 @@ export const loginUser = async (req, res) => {
     bcrypt.compare(
       req.body.password,
       existing_user.password,
-      async (err, isMatch) => {
+      (err, isMatch) => {
         if (err) {
           return res.status(500).json({
             success: false,
@@ -89,7 +89,7 @@ export const loginUser = async (req, res) => {
         } else {
           if (existing_user.verified) {
             const accessToken = generateToken(existing_user._id);
-            console.log("accesstoken generated",accessToken);
+            console.log("accesstoken generated", accessToken);
             res.status(201).json({
               success: true,
               message: "User loggedin successfully.",
