@@ -9,10 +9,8 @@ const sendemail = async (email,emailToken) => {
       pass: process.env.pass,
     },
   });
-  // console.log(process.env.EMAIL_ID)
   const mailData = {
     from: process.env.EMAIL_ID,
-    // to: `${email}`,
     to:"suvajit@itobuz.com",
     subject: "Email Verification",
     text: `Verify your email`,

@@ -3,12 +3,12 @@ import user from "../models/userSchema.js";
 
 export const verifyToken = async (req, res) => {
   const { token } = req.params;
-  
+
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  jwt.verify(token,process.env.TOKEN_SECRET, async (error, decoded) => {
+  jwt.verify(token, process.env.TOKEN_SECRET, async (error, decoded) => {
     if (error) {
       console.log(error);
       res.send(
@@ -17,7 +17,7 @@ export const verifyToken = async (req, res) => {
       res.status(401).json({ error: "Unauthorized" });
     } else {
       await user.findOneAndUpdate(
-        { token: token },
+        { _id: decoded.user_id },
         { $set: { verified: "true", token: null } },
         { new: true }
       );
