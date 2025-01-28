@@ -6,8 +6,8 @@ import { signinUser, signupUser } from "../validators/dataValidation.js";
 
 const route = express.Router();
 
-route.get("/verify/:token",verifyToken)
-route.post("/register",validate(signupUser),registerUser);
-route.post("/login",validate(signinUser),loginUser)
-
+route.get("/verify", verifyToken);
+route.post("/register", validate(signupUser), registerUser);
+route.post("/login", validate(signinUser), loginUser);
+var a;
 export default route;

@@ -2,6 +2,8 @@ import user from "../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import sendemail from "../emailVerify/verifyEmail.js";
+import { transformer } from "zod";
+import e from "express";
 
 const generateToken = (user_id) => {
   const generatedToken = jwt.sign({ user_id }, process.env.TOKEN_SECRET, {
@@ -9,7 +11,8 @@ const generateToken = (user_id) => {
   });
   return generatedToken;
 };
-// register
+
+// register---------------------------------------
 export const registerUser = async (req, res) => {
   try {
     const { userName, email, password } = req.body;
@@ -53,12 +56,13 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// login
+// login---------------------------------------
 
 export const loginUser = async (req, res) => {
   try {
     const { email } = req.body;
-    const existing_user = await user.findOne({ email });
+    const existing_user = await user.findOne({ email }, { password: 1 });
+
     if (!existing_user) {
       return res.status(404).json({
         success: false,
@@ -68,41 +72,41 @@ export const loginUser = async (req, res) => {
     }
 
     // Compare passwords
-    bcrypt.compare(
+    const compare = await bcrypt.compare(
       req.body.password,
-      existing_user.password,
-      (err, isMatch) => {
-        if (err) {
-          return res.status(500).json({
-            success: false,
-            message: err.message,
-            data: "Error comparing passwords",
-          });
-        }
-
-        if (!isMatch) {
-          return res.status(400).json({
-            success: false,
-            message: "Passwords do not match",
-            data: "The password you entered is incorrect",
-          });
-        } else {
-          if (existing_user.verified) {
-            const accessToken = generateToken(existing_user._id);
-            console.log("accesstoken generated", accessToken);
-            res.status(201).json({
-              success: true,
-              message: "User loggedin successfully.",
-            });
-          } else {
-            res.status(400).json({
-              success: false,
-              data: "user is not verified",
-            });
-          }
-        }
-      }
+      existing_user.password
     );
+
+    if (!compare) {
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match",
+        data: "The password you entered is incorrect",
+      });
+    } else {
+      if (existing_user.verified) {
+        const accessToken = generateToken(existing_user._id);
+        console.log(accessToken)
+
+        await user.findOneAndUpdate(
+          { _id: existing_user._id },
+          { $set: { isloggedin: true } },
+          { new: true }
+        );
+
+
+
+        res.status(201).json({
+          success: true,
+          message: "User loggedin successfully.",
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          data: "user is not verified",
+        });
+      }
+    }
   } catch (error) {
     res.status(500).json({
       success: false,

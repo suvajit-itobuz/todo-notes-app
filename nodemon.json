@@ -1,0 +1,11 @@
+{
+    "watch": [
+        "src",
+        "node_modules/.bin/eslint"  
+    ],
+    "ignore": [
+        ".git",
+        "node_modules/"
+    ],
+    "exec": ""
+} 

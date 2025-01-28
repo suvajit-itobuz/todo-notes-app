@@ -2,7 +2,8 @@ import jwt from "jsonwebtoken";
 import user from "../models/userSchema.js";
 
 export const verifyToken = async (req, res) => {
-  const { token } = req.params;
+  let  token= req.headers["authorization"];
+  token=token.replace('Bearer',"").trim()
 
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -21,7 +22,8 @@ export const verifyToken = async (req, res) => {
         { $set: { verified: "true", token: null } },
         { new: true }
       );
-      res.send("Email verified successfully");
+      res.status(200).json({ message:"Email verified successfully"});
+
     }
   });
 };

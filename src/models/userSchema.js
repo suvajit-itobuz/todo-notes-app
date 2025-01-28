@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+
 const userSchema = new mongoose.Schema({
   userName: {
     type: String,
@@ -11,17 +12,23 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  password: {
-    type: String,
-    required: true,
-  },
   token: {
     type: String,
   },
   verified: {
     type: Boolean,
     default: false,
+    select:true
   },
+  password: {
+    type: String,
+    required: true,
+    select:false
+  },
+  isloggedin: {
+    type:Boolean,
+    default:false
+  }
 });
 
 export default mongoose.model("user", userSchema);
