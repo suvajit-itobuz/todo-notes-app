@@ -2,8 +2,6 @@ import user from "../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import sendemail from "../emailVerify/verifyEmail.js";
-import { transformer } from "zod";
-import e from "express";
 
 const generateToken = (user_id) => {
   const generatedToken = jwt.sign({ user_id }, process.env.TOKEN_SECRET, {
@@ -86,16 +84,10 @@ export const loginUser = async (req, res) => {
     } else {
       if (existing_user.verified) {
         const accessToken = generateToken(existing_user._id);
-        console.log(accessToken)
-
-        await user.findOneAndUpdate(
-          { _id: existing_user._id },
-          { $set: { isloggedin: true } },
-          { new: true }
-        );
-
-
-
+        // req.headers.set("Authorization",accessToken);
+        console.log(accessToken);
+        existing_user.isloggedin = "true";
+        existing_user.save();
         res.status(201).json({
           success: true,
           message: "User loggedin successfully.",

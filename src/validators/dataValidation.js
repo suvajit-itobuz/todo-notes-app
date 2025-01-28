@@ -28,3 +28,7 @@ export const signinUser = z.object({
       message: "Password must contain at least one special character",
     }),
 });
+
+export const notesvalidation=z.object({
+  
+})
