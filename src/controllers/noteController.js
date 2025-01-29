@@ -126,7 +126,7 @@ export const deleteNote = async (req, res) => {
 export const searchNote = async (req, res) => {
   try {
 
-    // const note = await noteSchema.find({ title: { $regex: req.body.value, $options: 'i'}} , { userId: req.userId})
+
     const note = await noteSchema.find({
       userId:req.userId,
          title: { $regex:req.body.value, $options: "i" } 
