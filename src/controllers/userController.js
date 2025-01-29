@@ -1,16 +1,20 @@
 import user from "../models/userSchema.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import sendemail from "../emailVerify/verifyEmail.js";
+import sendemail from "../emailVerify/sendEmail.js";
+import { config } from "dotenv";
+import sessionSchema from "../models/sessionSchema.js";
+config();
 
-const generateToken = (user_id) => {
+const generateToken = (user_id, expire_time) => {
   const generatedToken = jwt.sign({ user_id }, process.env.TOKEN_SECRET, {
-    expiresIn: 60 * 60,
+    expiresIn: expire_time,
   });
   return generatedToken;
 };
 
 // register---------------------------------------
+
 export const registerUser = async (req, res) => {
   try {
     const { userName, email, password } = req.body;
@@ -25,7 +29,7 @@ export const registerUser = async (req, res) => {
       password: hashedPassword,
     });
 
-    const generatedToken = generateToken(data._id);
+    const generatedToken = generateToken(data._id, process.env.EXPIRE_TIME);
 
     await user.updateOne({
       $where: {
@@ -83,12 +87,29 @@ export const loginUser = async (req, res) => {
       });
     } else {
       if (existing_user.verified) {
-        const accessToken = generateToken(existing_user._id);
-        // req.headers.set("Authorization",accessToken);
-        console.log(accessToken);
-        existing_user.isloggedin = "true";
-        existing_user.save();
+        // generate tokens
+        const accessToken = generateToken(
+          existing_user._id,
+          process.env.EXPIRE_TIME
+        );
+        const refreshToken = generateToken(
+          existing_user._id,
+          process.env.REFRESH_TOKEN_TiME
+        );
+
+        const userId = existing_user._id;
+
+        const sessionModel = await sessionSchema.create({
+          userId,
+        });
+        sessionModel.save();
+
+        if (!sessionModel) {
+          throw new Error("session creation failed ");
+        }
         res.status(201).json({
+          token: accessToken,
+          refreshToken: refreshToken,
           success: true,
           message: "User loggedin successfully.",
         });
@@ -98,6 +119,51 @@ export const loginUser = async (req, res) => {
           data: "user is not verified",
         });
       }
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      data: "Internal server error",
+    });
+  }
+};
+
+// logout-------------------------------------------------
+
+export const logoutUser = async (req, res) => {
+  try {
+    console.log("hello");
+    const id = req.body._id;
+
+    const existingUser = await user.findById(id);
+    const userSession = await sessionSchema.find({ userId: id });
+
+    // console.log(userSession);
+
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+        data: "No user found ",
+      });
+    } else {
+      const deleteSession = sessionSchema
+        .deleteMany({ userId: id })
+        .then((result) => {
+          console.log(result);
+          if (deleteSession) {
+            return res.json({
+              status: 200,
+              message: "sessionn deleted and logged out successfully",
+            });
+          } else {
+            res.json({
+              status: 404,
+              message: "data not found",
+            });
+          }
+        });
     }
   } catch (error) {
     res.status(500).json({

@@ -25,10 +25,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     select:false
   },
-  isloggedin: {
-    type:Boolean,
-    default:false
-  }
 });
 
 export default mongoose.model("user", userSchema);

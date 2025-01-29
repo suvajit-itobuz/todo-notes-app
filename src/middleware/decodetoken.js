@@ -5,14 +5,11 @@ export const decodeToken = async (req, res, next) => {
   let token;
   try {
     const authHeader = req.headers.authorization;
-    if(authHeader.includes('Bearer'))
-    {
 
-       token = authHeader.split(" ")[1];
-    }
-    else 
-    {
-      token=authHeader;
+    if (authHeader.includes("Bearer")) {
+      token = authHeader.split(" ")[1];
+    } else {
+      token = authHeader;
     }
 
     if (!token) {
@@ -27,15 +24,11 @@ export const decodeToken = async (req, res, next) => {
         const { user_id } = decoded;
 
         const user = await userSchema.findById(user_id);
+
         if (!user) {
           return res.status(404).json({
             success: false,
             message: "User not found",
-          });
-        } else if (user.isloggedin === "false") {
-          return res.status(400).json({
-            success: false,
-            message: "The user has logged out",
           });
         } else {
           req.userId = user_id;
