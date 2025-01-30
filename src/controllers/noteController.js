@@ -1,4 +1,6 @@
+import { date } from "zod";
 import noteSchema from "../models/noteSchema.js";
+import userSchema from "../models/userSchema.js";
 
 //  creating note
 export const createNote = async (req, res) => {
@@ -22,6 +24,8 @@ export const createNote = async (req, res) => {
       title,
       content,
       userId: userId,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
     });
 
     if (note) {
@@ -72,6 +76,7 @@ export const updateNote = async (req, res) => {
       {
         title: title,
         content: content,
+        updatedAt: Date.now(),
       }
     );
     if (updated_result) {
@@ -125,14 +130,12 @@ export const deleteNote = async (req, res) => {
 // filter/search
 export const searchNote = async (req, res) => {
   try {
-
-
     const note = await noteSchema.find({
-      userId:req.userId,
-         title: { $regex:req.body.value, $options: "i" } 
+      userId: req.userId,
+      title: { $regex: req.body.value, $options: "i" },
     });
 
-    if (note.length!==0) {
+    if (note.length !== 0) {
       res.json({
         status: 200,
         message: "data fetched successfully",
@@ -153,3 +156,66 @@ export const searchNote = async (req, res) => {
   }
 };
 
+// sorting
+export const sortNotes = async (req, res) => {
+  try {
+    const sortCriteria = {
+      [req.query.sortField]: req.query.sortOrder === "asc" ? 1 : -1,
+    };
+    const sortedDocuments = await noteSchema
+      .find({ userId: req.userId })
+      .sort(sortCriteria);
+
+    if (sortedDocuments) {
+      res.json({
+        status: 200,
+        message: "data sorted successfully",
+        data: sortedDocuments,
+      });
+    } else {
+      res.json({
+        status: 404,
+        message: "data not found",
+      });
+    }
+  } catch (error) {
+    res.json({
+      status: 404,
+      message: "data sorting failed",
+      error: error.message,
+    });
+  }
+};
+
+//  pagination
+
+export const getUsersOffset = async (req, res) => {
+  try {
+    // Get the page number and limit from the query parameters
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+
+    // Calculate the offset
+    const offset = (page - 1) * limit;
+
+    // Fetch the users
+    const data = await noteSchema
+      .find({ userId: req.userId })
+      .skip(offset)
+      .limit(limit)
+      .exec();
+
+    // Return the paginated data
+    res.json({
+      status: 200,
+      data:data,
+      total: await noteSchema.find({userId:req.userId}).countDocuments(), // Total number of documents
+    });
+  } catch (error) {
+    res.json({
+      status: 404,
+      message: "pagination problem",
+      error: error.message,
+    });
+  }
+};
