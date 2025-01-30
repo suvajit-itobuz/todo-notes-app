@@ -1,6 +1,8 @@
 import { date } from "zod";
 import noteSchema from "../models/noteSchema.js";
 import userSchema from "../models/userSchema.js";
+import multer from "multer"
+const upload = multer({ dest: "uploads/" });
 
 //  creating note
 export const createNote = async (req, res) => {
@@ -188,10 +190,8 @@ export const sortNotes = async (req, res) => {
 };
 
 //  pagination
-
 export const getUsersOffset = async (req, res) => {
   try {
-
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
 
@@ -214,5 +214,31 @@ export const getUsersOffset = async (req, res) => {
       message: "pagination problem",
       error: error.message,
     });
+  }
+};
+
+// file upload
+export const fileUpload = async (req, res) => {
+  // req.file is the `avatar` file
+  // req.body will hold the text fields, if there were any
+  try {
+    // req.file is the `fileUpload` file
+    // req.body will hold the text fields, if there were any
+
+    // handle success
+    const storage = multer.diskStorage({
+      destination: (req, file, cb) => {
+        cb(null, 'uploads/');
+      },
+      filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+      }
+    });
+    // Create the multer instance
+    const upload = multer({ storage: storage });
+    return res.status(200).json({ message: "File uploaded successfully!" });
+  } catch (error) {
+    // handle error
+    return res.status(400).json({ message: error.message });
   }
 };

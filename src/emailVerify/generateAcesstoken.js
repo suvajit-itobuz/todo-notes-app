@@ -31,7 +31,6 @@ export const generateAccessToken = async (req, res) => {
       success: true,
       message: "access token generated succesfully",
     });
-    req.userId=req.userId;
   } catch (error) {
     res.json({
       status: 401,

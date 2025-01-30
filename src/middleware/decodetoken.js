@@ -27,10 +27,6 @@ export const decodeToken = async (req, res, next) => {
               error: error.message,
             });
           }
-          res.status(401).json({
-            message: "invalid token",
-            error: error.message,
-          });
         } else {
           const { user_id } = decoded;
 
