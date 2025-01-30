@@ -191,25 +191,22 @@ export const sortNotes = async (req, res) => {
 
 export const getUsersOffset = async (req, res) => {
   try {
-    // Get the page number and limit from the query parameters
+
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
 
-    // Calculate the offset
     const offset = (page - 1) * limit;
 
-    // Fetch the users
     const data = await noteSchema
       .find({ userId: req.userId })
       .skip(offset)
       .limit(limit)
       .exec();
 
-    // Return the paginated data
     res.json({
       status: 200,
-      data:data,
-      total: await noteSchema.find({userId:req.userId}).countDocuments(), // Total number of documents
+      data: data,
+      total: await noteSchema.find({ userId: req.userId }).countDocuments(), // Total number of documents
     });
   } catch (error) {
     res.json({

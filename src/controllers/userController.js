@@ -133,13 +133,8 @@ export const loginUser = async (req, res) => {
 
 export const logoutUser = async (req, res) => {
   try {
-    console.log("hello");
     const id = req.body._id;
-
     const existingUser = await user.findById(id);
-    const userSession = await sessionSchema.find({ userId: id });
-
-    // console.log(userSession);
 
     if (!existingUser) {
       return res.status(404).json({
@@ -155,7 +150,7 @@ export const logoutUser = async (req, res) => {
           if (deleteSession) {
             return res.json({
               status: 200,
-              message: "sessionn deleted and logged out successfully",
+              message: "session deleted and logged out successfully",
             });
           } else {
             res.json({
