@@ -1,13 +1,11 @@
 import nodemailer from "nodemailer";
 import { config } from "dotenv";
-import hbs from 'nodemailer-express-handlebars'
+import hbs from "nodemailer-express-handlebars";
 import path from "path";
 
 config();
 
-
 const sendemail = async (email, emailToken) => {
-
   const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
@@ -27,15 +25,14 @@ const sendemail = async (email, emailToken) => {
   );
   const mailData = {
     from: process.env.EMAIL_ID,
-    template:"index",
+    template: "index",
     to: "suvajit@itobuz.com",
     subject: "Email Verification",
     text: `Verify your email`,
     context: {
-      token: emailToken
-  }
+      token: emailToken,
+    },
   };
-
 
   transporter.sendMail(mailData, (error) => {
     if (error) {

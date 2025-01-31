@@ -12,6 +12,7 @@ const app = express();
 app.use(express.json());
 app.use("/", route);
 app.use("/note", noteRoute);
+app.use("/uploads",express.static('uploads'))
 
 dbconnect();
 

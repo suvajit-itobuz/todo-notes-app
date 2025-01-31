@@ -234,7 +234,7 @@ export const fileUpload = async (req, res) => {
     }
     const Note = await noteSchema.findById(id);
     if (Note) {
-      Note.file = req.file.originalname;
+      Note.file = "http://localhost:8000/"+req.file.path;
       await Note.save();
       return res.status(200).json({
         success: true,
