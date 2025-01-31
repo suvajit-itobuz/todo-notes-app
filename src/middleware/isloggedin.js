@@ -1,6 +1,6 @@
 import sessionSchema from "../models/sessionSchema.js";
 
-const isLoggedIn = async (req, res, next) => {
+export const isLoggedIn = async (req, res, next) => {
   try {
     let session;
     const { _id } = req.body;
@@ -28,4 +28,4 @@ const isLoggedIn = async (req, res, next) => {
   }
 };
 
-export default isLoggedIn;
+

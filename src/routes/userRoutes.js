@@ -3,8 +3,8 @@ import { loginUser, logoutUser, registerUser } from "../controllers/userControll
 import { verifyToken,verifyRefreshToken } from "../middleware/authMiddleware.js";
 import { validate } from "../middleware/validate.js";
 import { signinUser, signupUser } from "../validators/dataValidation.js";
-import isLoggedIn from "../middleware/isloggedin.js";
 import { generateAccessToken } from "../emailVerify/generateAcesstoken.js";
+import { isLoggedIn } from "../middleware/isloggedin.js";
 
 const route = express.Router();
 

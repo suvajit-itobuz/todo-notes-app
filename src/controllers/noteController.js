@@ -1,8 +1,7 @@
 import { date } from "zod";
 import noteSchema from "../models/noteSchema.js";
-import userSchema from "../models/userSchema.js";
-import multer from "multer"
-const upload = multer({ dest: "uploads/" });
+import path from "path";
+import multer from "multer";
 
 //  creating note
 export const createNote = async (req, res) => {
@@ -218,27 +217,46 @@ export const getUsersOffset = async (req, res) => {
 };
 
 // file upload
-export const fileUpload = async (req, res) => {
-  // req.file is the `avatar` file
-  // req.body will hold the text fields, if there were any
-  try {
-    // req.file is the `fileUpload` file
-    // req.body will hold the text fields, if there were any
+const storage = multer.diskStorage({
+  destination: "./uploads",
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
 
-    // handle success
-    const storage = multer.diskStorage({
-      destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-      },
-      filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
-      }
-    });
-    // Create the multer instance
-    const upload = multer({ storage: storage });
-    return res.status(200).json({ message: "File uploaded successfully!" });
+export const fileUpload = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!req.file) {
+      return res.status(400).send("No file uploaded.");
+    }
+    const Note = await noteSchema.findById(id);
+    if (Note) {
+      Note.file = req.file.originalname;
+      await Note.save();
+      return res.status(200).json({
+        success: true,
+        message: `File uploaded : ${req.file.filename}`,
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: "error in uploading file no note schema found",
+      });
+    }
   } catch (error) {
-    // handle error
-    return res.status(400).json({ message: error.message });
+    res.json({
+      status: 404,
+      message: "error in uploading file",
+      error: error.message,
+    });
   }
 };
+
+export const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1000000 }, // Limit file size to 1MB
+});
