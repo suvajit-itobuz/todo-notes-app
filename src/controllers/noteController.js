@@ -1,4 +1,3 @@
-import { date } from "zod";
 import noteSchema from "../models/noteSchema.js";
 import path from "path";
 import multer from "multer";

@@ -49,8 +49,7 @@ export const decodeToken = async (req, res, next) => {
     return res.status(500).json({
       success: false,
       message: "Could not Access",
-      error:error.message
+      error: error.message,
     });
   }
 };
-

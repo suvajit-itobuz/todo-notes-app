@@ -1,8 +1,13 @@
 import nodemailer from "nodemailer";
-import {config} from "dotenv";
+import { config } from "dotenv";
+import hbs from 'nodemailer-express-handlebars'
+import path from "path";
+
 config();
 
-const sendemail = async (email,emailToken) => {
+
+const sendemail = async (email, emailToken) => {
+
   const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
@@ -10,18 +15,29 @@ const sendemail = async (email,emailToken) => {
       pass: process.env.pass,
     },
   });
+  transporter.use(
+    "compile",
+    hbs({
+      viewEngine: {
+        partialsDir: path.resolve("src/views/partials"),
+        defaultLayout: false,
+      },
+      viewPath: path.resolve("src/views/layouts"),
+    })
+  );
   const mailData = {
     from: process.env.EMAIL_ID,
-    to:"suvajit@itobuz.com",
+    template:"index",
+    to: "suvajit@itobuz.com",
     subject: "Email Verification",
     text: `Verify your email`,
-    html:`<p>Hello, verify your email address by clicking on this</p>
-    <br>
-    <a href="http://localhost:8000/verify/${emailToken}">Click here to verify</a>
-    `
+    context: {
+      token: emailToken
+  }
   };
 
-  transporter.sendMail(mailData, (error, info) => {
+
+  transporter.sendMail(mailData, (error) => {
     if (error) {
       return console.log(error);
     } else {
@@ -29,4 +45,5 @@ const sendemail = async (email,emailToken) => {
     }
   });
 };
+
 export default sendemail;
