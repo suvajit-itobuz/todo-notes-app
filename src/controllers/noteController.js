@@ -70,7 +70,8 @@ export const getNote = async (req, res) => {
 // updateNote
 export const updateNote = async (req, res) => {
   try {
-    const { _id, title, content } = req.body;
+    const _id= req.params.id;
+    const {title, content } = req.body;
     const updated_result = await noteSchema.findByIdAndUpdate(
       { _id },
       {
@@ -104,7 +105,7 @@ export const updateNote = async (req, res) => {
 // deleteNote
 export const deleteNote = async (req, res) => {
   try {
-    const id = req.body._id;
+    const id = req.params.id;
     const note = await noteSchema.findByIdAndDelete(id);
     if (note) {
       res.json({

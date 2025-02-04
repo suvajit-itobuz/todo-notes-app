@@ -1,18 +1,21 @@
 import { faker } from "@faker-js/faker";
 import noteSchema from "../models/noteSchema.js";
+import userSchema from "../models/userSchema.js";
 
 export const noteSeed = async (value) => {
   try {
+    console.log("hello")
     let notes = [];
-    
+    const users = await userSchema.find();
+
     for (let i = 0; i < value; i++) {
-      const generatedId=Math.random()
+      const user = users[Math.floor(Math.random() * users.length)];
       let newNote = {
-        title: faker.helpers.uniqueArray(faker.word),
+        title: faker.word.noun,
         content: faker.lorem.sentence(),
-        userId:generatedId,
-        createdAt: faker.defaultRefDate(),
-        updatedAt: faker.defaultRefDate(),
+        userId: user,
+        createdAt: faker.date.recent(),
+        updatedAt: faker.date.recent(),
       };
       notes.push(newNote);
     }

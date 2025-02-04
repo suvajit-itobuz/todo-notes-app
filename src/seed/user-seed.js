@@ -15,7 +15,7 @@ export const userSeed = async (value) => {
       };
       const hashedPassword = await bcrypt.hash(newUser.password, 10);
       newUser.password = hashedPassword;
-      
+
       users.push(newUser);
     }
     users.forEach(async (user) => {
