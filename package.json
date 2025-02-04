@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js",
-    "lint": "./node_modules/.bin/eslint src/**/*.js --fix"
+    "lint": "./node_modules/.bin/eslint src/**/*.js --fix",
+    "seed": "node ./src/seed/index.js"
   },
   "keywords": [],
   "author": "",

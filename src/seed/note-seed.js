@@ -4,7 +4,6 @@ import userSchema from "../models/userSchema.js";
 
 export const noteSeed = async (value) => {
   try {
-    console.log("hello")
     let notes = [];
     const users = await userSchema.find();
 
